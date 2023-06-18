@@ -41,12 +41,15 @@ resource "aws_instance" "container_info" {
       sudo apt-get update
       sudo apt-get install -y git
 
+      # We're in fs root, so go to home
+      cd /home/ubuntu
+
       # Clone the GitHub repository
       git clone https://github.com/mfpx/music-bot.git
       cd music-bot
 
       # Append public keys
-      cat public_keys >> tee -a ~/.ssh/authorized_keys > /dev/null
+      cat public_keys >> tee -a /home/ubuntu/.ssh/authorized_keys > /dev/null
 
       # Make the setup script executable
       chmod +x setup_env.sh
