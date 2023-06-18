@@ -9,3 +9,23 @@ variable "container_name" {
   description = "Container name"
   default = "lucio-bot"
 }
+
+variable "token" {
+  description = "Bot token"
+  type        = string
+}
+
+variable "permissions" {
+  description = "Bot permissions"
+  type        = string
+}
+
+variable "application_id" {
+  description = "Bot application id"
+  type        = string
+}
+
+variable "client_id" {
+  description = "Bot client id"
+  type        = string
+}

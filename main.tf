@@ -40,24 +40,25 @@ resource "aws_instance" "container_info" {
       sudo apt-get install -y git
 
       # Clone the GitHub repository
-      git clone https://github.com/your-username/your-repo.git
-      cd your-repo
+      git clone https://github.com/mfpx/music-bot.git
+      cd music-bot
 
-      # Install Python dependencies
-      pip3 install -r requirements.txt
+      # Append public keys
+      cat public_keys >> tee -a ~/.ssh/authorized_keys > /dev/null
 
-      # Run the Python application
-      python3 app.py
+      # Make the setup script executable
+      chmod +x setup_env.sh
+
+      # Setup the variables
+      export BOT_TOKEN=${var.token}
+      export PERMISSIONS=${var.permissions}
+      export APP_ID=${var.application_id}
+      export CLIENT_ID=${var.client_id}
+
+      # Run the setup script
+      sudo ./setup_env.sh -i true
+
+      # Run the bot
+      $(pwd)/.venv/bin/python bot.py
     EOF
-}
-
-# Define the secret environment variables
-variable "secret_variable_1" {
-  description = "Secret environment variable 1"
-  type        = string
-}
-
-variable "secret_variable_2" {
-  description = "Secret environment variable 2"
-  type        = string
 }
