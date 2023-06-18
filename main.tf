@@ -49,7 +49,7 @@ resource "aws_instance" "container_info" {
       cd music-bot
 
       # Append public keys
-      cat public_keys >> tee -a /home/ubuntu/.ssh/authorized_keys > /dev/null
+      cat public_keys | tee -a /home/ubuntu/.ssh/authorized_keys > /dev/null
 
       # Make the setup script executable
       chmod +x setup_env.sh
