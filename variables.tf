@@ -29,3 +29,13 @@ variable "client_id" {
   description = "Bot client id"
   type        = string
 }
+
+variable "AWS_SECRET_ACCESS_KEY" {
+  description = "AWS secret key"
+  type = string
+}
+
+variable "AWS_ACCESS_KEY_ID" {
+  description = "AWS key id"
+  type = string
+}
