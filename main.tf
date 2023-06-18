@@ -64,6 +64,6 @@ resource "aws_instance" "container_info" {
       sudo ./setup_env.sh -i true
 
       # Run the bot
-      $(pwd)/.venv/bin/python bot.py
+      .venv/bin/python bot.py
     EOF
 }
