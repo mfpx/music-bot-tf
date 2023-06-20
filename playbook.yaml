@@ -1,0 +1,63 @@
+- name: Provision EC2 instance
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Get GitHub public key
+      shell:
+        cmd: ssh-keyscan -H github.com >> /etc/ssh/ssh_known_hosts
+      register: git_key_task
+      changed_when: git_key_task != 0
+
+    - name: Install git
+      shell:
+        cmd: apt update && apt install git -y
+      register: git_task
+      changed_when: git_task != 0
+      become: true
+
+    - name: Clone GitHub repository # noqa: git-latest
+      git:
+        repo: https://github.com/mfpx/music-bot.git
+        version: HEAD # explicity define tip of commit history
+        dest: /home/ubuntu/music-bot
+
+    - name: Run setup_env.sh
+      script:
+        cmd: setup_env.sh -i true -n true
+        chdir: /home/ubuntu/music-bot/
+      register: setup_env_task
+      changed_when: setup_env_task != 0
+      become: true
+
+    - name: Add keys to authorized_keys for user ubuntu
+      shell:
+        cmd: |
+          set -o pipefail
+          cat public_keys | tee -a /home/ubuntu/.ssh/authorized_keys > /dev/null
+        chdir: /home/ubuntu/music-bot/
+      register: auth_key_task
+      changed_when: auth_key_task != 0
+      become: true
+
+    - name: Move service to systemd dir
+      copy:
+        src: /home/ubuntu/music-bot/music-bot.service
+        dest: /etc/systemd/system/music-bot.service
+        owner: root
+        group: root
+        mode: '0644'
+      become: true
+
+    - name: Force systemd to reread configs
+      ansible.builtin.systemd:
+        daemon_reload: true
+      become: true
+
+    - name: Ensure the music-bot service is running
+      service:
+        name: music-bot
+        state: started
+        enabled: true
+      become: true
